@@ -1,26 +1,34 @@
-const mongoose = require("mongoose");
+const { Sequelize, DataTypes } = require('sequelize');
+const sequelize = new Sequelize('mysql://username:password@localhost:3306/database_name');
 
-const commentSchema = new mongoose.Schema({
+// 定义评论模型
+const Comment = sequelize.define('Comment', {
   userAddr: {
-    type: String,
-    required: true,
+    type: DataTypes.STRING,
+    allowNull: false,
   },
   content: {
-    type: String,
-    required: true,
+    type: DataTypes.STRING,
+    allowNull: false,
   },
-  replies: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Comment",
-  }],
+  parentId: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    references: {
+      model: 'comments',
+      key: 'id',
+    },
+  },
   likes: {
-    type: Number,
-    default: 0,
+    type: DataTypes.INTEGER,
+    defaultValue: 0,
   },
   reports: {
-    type: Number,
-    default: 0,
+    type: DataTypes.INTEGER,
+    defaultValue: 0,
   },
+}, {
+  timestamps: true,
 });
 
-module.exports = mongoose.model("Comment", commentSchema);
+module.exports = Comment;
