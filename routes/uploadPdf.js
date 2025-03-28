@@ -4,6 +4,7 @@ const multer = require("multer");
 const path = require("path");
 const parsePdf = require("../parsePdf");
 const fs = require("fs");
+const { Sequelize, Op } = require("sequelize");
 
 // 设置 multer 存储配置
 const storage = multer.diskStorage({
@@ -22,9 +23,12 @@ router.post("/", upload.single("pdfFile"), async (req, res) => {
   try {
     const filePath = req.file.path;
     const text = await parsePdf(filePath);
-    
-    // 解析完成后，您可以选择将解析结果存储在数据库中
-    // await storePdfTextToDatabase(filePath, text); // 存储到数据库（需要实现该函数）
+
+    // 这里假设您想要存储解析后的文本，可以将其保存到数据库
+    const newPdfRecord = await PdfModel.create({
+      filePath,
+      text,
+    });
 
     res.status(200).json({ message: "PDF uploaded and parsed", text });
   } catch (error) {
